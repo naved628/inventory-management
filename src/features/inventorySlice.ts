@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { fetchInventory } from "../utils/api";
 
 export interface Product {
   value: string | number;
@@ -19,10 +20,7 @@ const initialState: InventoryState = { products: [] };
 export const fetchInventoryData = createAsyncThunk(
   "inventory/fetch",
   async () => {
-    const response = await fetch(
-      "https://dev-0tf0hinghgjl39z.api.raw-labs.com/inventory"
-    );
-    return response.json();
+    return await fetchInventory(); // Calls the API function instead of hardcoded fetch
   }
 );
 
