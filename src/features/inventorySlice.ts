@@ -20,7 +20,7 @@ const initialState: InventoryState = { products: [] };
 export const fetchInventoryData = createAsyncThunk(
   "inventory/fetch",
   async () => {
-    return await fetchInventory(); // Calls the API function instead of hardcoded fetch
+    return await fetchInventory();
   }
 );
 

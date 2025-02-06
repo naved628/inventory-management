@@ -16,14 +16,6 @@ import InventoryTable from "./InventoryTable";
 interface InventoryViewProps {
   isAdmin: boolean;
 }
-interface Products {
-  disabled: boolean;
-  name: string;
-  category: string;
-  price: number | string;
-  quantity: number;
-  value: number | string;
-}
 
 const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -65,17 +57,16 @@ const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
   };
 
   const totalProducts = products.length;
-  const totalValue = products.reduce((acc: number, product: Products) => {
+  const totalValue = products.reduce((acc, product) => {
     const numericValue =
-      parseFloat(String(product.value).replace(/[^0-9.]/g, "")) || 0;
+      parseFloat(String(product?.value).replace(/[^0-9.]/g, "")) || 0;
     return acc + numericValue;
   }, 0);
   const outOfStock = products.filter(
-    (product: Products) => product.quantity === 0
+    (product) => product?.quantity === 0
   ).length;
-  const uniqueCategories = new Set(
-    products.map((product: Products) => product.category)
-  ).size;
+  const uniqueCategories = new Set(products.map((product) => product?.category))
+    .size;
 
   return (
     <div className="p-6 bg-gray-900 text-white min-h-screen">

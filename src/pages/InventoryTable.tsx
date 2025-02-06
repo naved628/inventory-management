@@ -59,7 +59,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                       : "text-gray-600 cursor-not-allowed"
                   }`}
                   disabled={!isAdmin}
-                  onClick={() => isAdmin && openModal(product)}
+                  onClick={() =>
+                    isAdmin && !product?.disabled && openModal(product)
+                  }
                 >
                   <FaEdit size={18} />
                 </button>
@@ -75,7 +77,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                   disabled={!isAdmin}
                   onClick={() => isAdmin && handleToggleDisable(product.name)}
                 >
-                  {product.disabled ? (
+                  {product?.disabled ? (
                     <FaEyeSlash size={18} />
                   ) : (
                     <FaEye size={18} />
@@ -89,7 +91,11 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                       : "text-gray-600 cursor-not-allowed "
                   }`}
                   disabled={!isAdmin}
-                  onClick={() => openDeleteModal(product.name)}
+                  onClick={() =>
+                    isAdmin &&
+                    !product?.disabled &&
+                    openDeleteModal(product.name)
+                  }
                 >
                   <FaTrash size={18} />
                 </button>
