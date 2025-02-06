@@ -3,15 +3,26 @@ import { FaShoppingCart, FaDollarSign } from "react-icons/fa";
 import { MdCategory } from "react-icons/md";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 
+interface StatsWidgetProps {
+  totalProducts: number;
+  totalValue: number;
+  outOfStock: number;
+  uniqueCategories: number;
+}
 
-const StatsWidget: React.FC = () => {
+const StatsWidget: React.FC<StatsWidgetProps> = ({
+  totalProducts,
+  totalValue,
+  outOfStock,
+  uniqueCategories,
+}) => {
   return (
     <div className="grid grid-cols-4 gap-6 mb-6">
       <div className="p-4 bg-green-900 rounded-lg text-white flex items-center space-x-4">
         <FaShoppingCart size={40} />
         <div>
           <p className="text-lg">Total product</p>
-          <h3 className="text-3xl font-bold">Total Products</h3>
+          <h3 className="text-3xl font-bold">{totalProducts}</h3>
         </div>
       </div>
 
@@ -19,7 +30,7 @@ const StatsWidget: React.FC = () => {
         <FaDollarSign size={40} />
         <div>
           <p className="text-lg">Total store value</p>
-          <h3 className="text-3xl font-bold">$123</h3>
+          <h3 className="text-3xl font-bold">${totalValue.toLocaleString()}</h3>
         </div>
       </div>
 
@@ -27,7 +38,7 @@ const StatsWidget: React.FC = () => {
         <AiOutlineShoppingCart size={40} />
         <div>
           <p className="text-lg">Out of stocks</p>
-          <h3 className="text-3xl font-bold">1</h3>
+          <h3 className="text-3xl font-bold">{outOfStock}</h3>
         </div>
       </div>
 
@@ -35,7 +46,7 @@ const StatsWidget: React.FC = () => {
         <MdCategory size={40} />
         <div>
           <p className="text-lg">No of Category</p>
-          <h3 className="text-3xl font-bold">1</h3>
+          <h3 className="text-3xl font-bold">{uniqueCategories}</h3>
         </div>
       </div>
     </div>

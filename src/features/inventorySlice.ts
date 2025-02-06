@@ -1,0 +1,68 @@
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+
+export interface Product {
+  value: number;
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  category: string;
+  disabled: boolean;
+}
+
+interface InventoryState {
+  products: Product[];
+}
+
+const initialState: InventoryState = { products: [] };
+
+export const fetchInventoryData = createAsyncThunk(
+  "inventory/fetch",
+  async () => {
+    const response = await fetch(
+      "https://dev-0tf0hinghgjl39z.api.raw-labs.com/inventory"
+    );
+    return response.json();
+  }
+);
+
+const inventorySlice = createSlice({
+  name: "inventory",
+  initialState,
+  reducers: {
+    setInventory: (state, action: PayloadAction<Product[]>) => {
+      state.products = action.payload;
+    },
+
+    editProduct: (state, action: PayloadAction<Product>) => {
+      const index = state.products.findIndex(
+        (p) => p.name === action.payload.name
+      );
+      if (index !== -1) {
+        state.products[index] = action.payload;
+      }
+    },
+
+    deleteProduct: (state, action: PayloadAction<string>) => {
+      state.products = state.products.filter((p) => p.name !== action.payload);
+    },
+
+    // there is no id present inside that product because of that we are using name
+    disableProduct: (state, action: PayloadAction<string>) => {
+      const product = state.products.find((p) => p.name === action.payload);
+      if (product) {
+        product.disabled = !product.disabled; // Toggle the disabled state
+      }
+    },
+  },
+
+  extraReducers: (builder) => {
+    builder.addCase(fetchInventoryData.fulfilled, (state, action) => {
+      state.products = action.payload;
+    });
+  },
+});
+
+export const { editProduct, deleteProduct, disableProduct } =
+  inventorySlice.actions;
+export default inventorySlice.reducer;

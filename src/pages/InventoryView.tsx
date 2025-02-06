@@ -9,6 +9,14 @@ import StatsWidget from "./StatsWidget";
 interface InventoryViewProps {
   isAdmin: boolean;
 }
+interface Products {
+  disabled: any;
+  name: string;
+  category: string;
+  price: number;
+  quantity: number;
+  value: number;
+}
 
 const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -33,10 +41,29 @@ const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
     dispatch(disableProduct(productName)); // Toggle disabled state in Redux
   };
 
+  const totalProducts = products.length;
+  const totalValue = products.reduce((acc: string, product: Products) => {
+    const numericValue =
+      parseFloat(String(product.value).replace(/[^0-9.]/g, "")) || 0;
+    return acc + numericValue;
+  }, 0);
+  const outOfStock = products.filter(
+    (product: Products) => product.quantity === 0
+  ).length;
+  const uniqueCategories = new Set(
+    products.map((product: Products) => product.category)
+  ).size;
+
   return (
     <div className="p-6 bg-gray-900 text-white min-h-screen">
       <h2 className="text-5xl  mb-6">Inventory stats</h2>
-      <StatsWidget />
+      {/* Stats Widgets */}
+      <StatsWidget
+        totalProducts={totalProducts}
+        totalValue={totalValue}
+        outOfStock={outOfStock}
+        uniqueCategories={uniqueCategories}
+      />
 
       {/* Inventory Table */}
       <div className="overflow-hidden rounded-lg border border-gray-700">
@@ -52,7 +79,7 @@ const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product: any, index: number) => (
+            {products.map((product: Products, index: number) => (
               <tr
                 key={index}
                 className={`${
@@ -80,8 +107,8 @@ const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
                     className={`mr-2 ${
                       isAdmin
                         ? product.disabled
-                          ? "text-gray-400 hover:text-gray-300 cursor-pointer"
-                          : "text-gray-100 hover:text-gray-700 cursor-pointer"
+                          ? "text-gray-400 hover:text-gray-300 cursor-pointer" // If disabled, show gray
+                          : "text-gray-100 hover:text-gray-700 cursor-pointer" // If enabled, show light gray
                         : "text-gray-600 cursor-not-allowed"
                     }`}
                     disabled={!isAdmin}
