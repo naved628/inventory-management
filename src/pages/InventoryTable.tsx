@@ -6,7 +6,7 @@ interface Product {
   category: string;
   price: string;
   quantity: number;
-  value: string;
+  value: string | number;
   disabled: boolean;
 }
 
@@ -48,36 +48,34 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
             >
               <td className="p-3">{product.name}</td>
               <td className="p-3">{product.category}</td>
-              <td className="p-3">{product.price}</td>
+              <td className="p-3">${product.price}</td>
               <td className="p-3">{product.quantity}</td>
-              <td className="p-3">{product.value.toLocaleString()}</td>
-              <td className="p-3 text-center">
+              <td className="p-3">${product.value.toLocaleString()}</td>
+              <td className="p-3 text-center flex justify-center gap-2">
                 <button
-                  className={`mr-2 ${
-                    isAdmin
-                      ? "text-green-400 hover:text-green-300 cursor-pointer"
-                      : "text-gray-600 cursor-not-allowed"
+                  className={`p-2 rounded-md ${
+                    isAdmin && !product.disabled
+                      ? "text-green-400 hover:text-green-300"
+                      : "text-gray-600 cursor-not-allowed opacity-50"
                   }`}
-                  disabled={!isAdmin}
+                  disabled={!isAdmin || product?.disabled}
                   onClick={() =>
-                    isAdmin && !product?.disabled && openModal(product)
+                    isAdmin && !product.disabled && openModal(product)
                   }
                 >
                   <FaEdit size={18} />
                 </button>
 
                 <button
-                  className={`mr-2 ${
+                  className={`p-2 rounded-md ${
                     isAdmin
-                      ? product.disabled
-                        ? "text-gray-400 hover:text-gray-300 cursor-pointer"
-                        : "text-gray-100 hover:text-gray-700 cursor-pointer"
+                      ? "text-gray-100 hover:text-gray-700 cursor-pointer"
                       : "text-gray-600 cursor-not-allowed"
                   }`}
                   disabled={!isAdmin}
                   onClick={() => isAdmin && handleToggleDisable(product.name)}
                 >
-                  {product?.disabled ? (
+                  {product.disabled ? (
                     <FaEyeSlash size={18} />
                   ) : (
                     <FaEye size={18} />
@@ -85,15 +83,15 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 </button>
 
                 <button
-                  className={`${
-                    isAdmin
-                      ? "text-red-500 hover:text-red-400 cursor-pointer"
-                      : "text-gray-600 cursor-not-allowed "
+                  className={`p-2 rounded-md ${
+                    isAdmin && !product.disabled
+                      ? "text-red-500 hover:text-red-400"
+                      : "text-gray-600 cursor-not-allowed opacity-50"
                   }`}
-                  disabled={!isAdmin}
+                  disabled={!isAdmin || product?.disabled}
                   onClick={() =>
                     isAdmin &&
-                    !product?.disabled &&
+                    !product.disabled &&
                     openDeleteModal(product.name)
                   }
                 >

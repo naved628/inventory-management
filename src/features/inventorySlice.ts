@@ -5,7 +5,7 @@ export interface Product {
   value: string | number;
   id: number;
   name: string;
-  price: string | number;
+  price: string;
   quantity: number;
   category: string;
   disabled: boolean;
