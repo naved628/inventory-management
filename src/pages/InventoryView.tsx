@@ -1,30 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchInventoryData, disableProduct } from "../features/inventorySlice";
+import {
+  fetchInventoryData,
+  deleteProduct,
+  disableProduct,
+  editProduct,
+} from "../features/inventorySlice";
 import { AppDispatch, RootState } from "../store";
-import { FaEdit, FaEye, FaEyeSlash, FaTrash } from "react-icons/fa";
 import StatsWidget from "./StatsWidget";
+import EditProductModal from "../components/EditProductModal";
+import DeleteModal from "../components/DeleteModal";
+import InventoryTable from "./InventoryTable";
 
 interface InventoryViewProps {
   isAdmin: boolean;
 }
 interface Products {
-  disabled: any;
+  disabled: boolean;
   name: string;
   category: string;
-  price: number;
+  price: number | string;
   quantity: number;
-  value: number;
+  value: number | string;
 }
 
 const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const products = useSelector((state: RootState) => state.inventory.products);
-  const [setSelectedProduct] = useState<string | any>(null);
+  const products = useSelector(
+    (state: RootState) => state?.inventory?.products
+  );
+  const [selectedProduct, setSelectedProduct] = useState<string | any>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const openDeleteModal = (productId: any) => {
     setSelectedProduct(productId);
+    setDeleteModalOpen(true);
   };
 
   useEffect(() => {
@@ -32,9 +44,20 @@ const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
   }, [dispatch]);
 
   const openModal = (product: any) => {
-    console.log({ product });
-
     setSelectedProduct(product);
+    setModalOpen(true);
+  };
+
+  const handleSave = (updatedProduct: any) => {
+    dispatch(editProduct(updatedProduct));
+    setModalOpen(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (selectedProduct !== null) {
+      dispatch(deleteProduct(selectedProduct));
+      setDeleteModalOpen(false);
+    }
   };
 
   const handleToggleDisable = (productName: string) => {
@@ -42,7 +65,7 @@ const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
   };
 
   const totalProducts = products.length;
-  const totalValue = products.reduce((acc: string, product: Products) => {
+  const totalValue = products.reduce((acc: number, product: Products) => {
     const numericValue =
       parseFloat(String(product.value).replace(/[^0-9.]/g, "")) || 0;
     return acc + numericValue;
@@ -57,7 +80,6 @@ const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
   return (
     <div className="p-6 bg-gray-900 text-white min-h-screen">
       <h2 className="text-5xl  mb-6">Inventory stats</h2>
-      {/* Stats Widgets */}
       <StatsWidget
         totalProducts={totalProducts}
         totalValue={totalValue}
@@ -65,79 +87,27 @@ const InventoryView: React.FC<InventoryViewProps> = ({ isAdmin }) => {
         uniqueCategories={uniqueCategories}
       />
 
-      {/* Inventory Table */}
-      <div className="overflow-hidden rounded-lg border border-gray-700">
-        <table className="w-full border-collapse bg-gray-800">
-          <thead>
-            <tr className="bg-gray-700 text-left text-green-400">
-              <th className="p-3">Name</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Price</th>
-              <th className="p-3">Quantity</th>
-              <th className="p-3">Value</th>
-              <th className="p-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product: Products, index: number) => (
-              <tr
-                key={index}
-                className={`${
-                  product.disabled ? "opacity-50" : ""
-                } border-b border-gray-700`}
-              >
-                <td className="p-3">{product.name}</td>
-                <td className="p-3">{product.category}</td>
-                <td className="p-3">{product.price}</td>
-                <td className="p-3">{product.quantity}</td>
-                <td className="p-3">{product.value.toLocaleString()}</td>
-                <td className="p-3 text-center">
-                  <button
-                    className={`mr-2 ${
-                      isAdmin
-                        ? "text-green-400 hover:text-green-300 cursor-pointer"
-                        : "text-gray-600 cursor-not-allowed"
-                    }`}
-                    disabled={!isAdmin}
-                    onClick={() => isAdmin && openModal(product)}
-                  >
-                    <FaEdit size={18} />
-                  </button>
-                  <button
-                    className={`mr-2 ${
-                      isAdmin
-                        ? product.disabled
-                          ? "text-gray-400 hover:text-gray-300 cursor-pointer" // If disabled, show gray
-                          : "text-gray-100 hover:text-gray-700 cursor-pointer" // If enabled, show light gray
-                        : "text-gray-600 cursor-not-allowed"
-                    }`}
-                    disabled={!isAdmin}
-                    onClick={() => isAdmin && handleToggleDisable(product.name)}
-                  >
-                    {product.disabled ? (
-                      <FaEyeSlash size={18} />
-                    ) : (
-                      <FaEye size={18} />
-                    )}
-                  </button>
+      <InventoryTable
+        products={products}
+        isAdmin={isAdmin}
+        openModal={openModal}
+        handleToggleDisable={handleToggleDisable}
+        openDeleteModal={openDeleteModal}
+      />
 
-                  <button
-                    className={`${
-                      isAdmin
-                        ? "text-red-500 hover:text-red-400 cursor-pointer"
-                        : "text-gray-600 cursor-not-allowed "
-                    }`}
-                    disabled={!isAdmin}
-                    onClick={() => openDeleteModal(product?.name)}
-                  >
-                    <FaTrash size={18} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {isModalOpen && selectedProduct && (
+        <EditProductModal
+          product={selectedProduct}
+          isOpen={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          onSave={handleSave}
+        />
+      )}
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 };

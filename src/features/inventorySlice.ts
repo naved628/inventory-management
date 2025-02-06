@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Product {
-  value: number;
+  value: string | number;
   id: number;
   name: string;
-  price: number;
+  price: string | number;
   quantity: number;
   category: string;
   disabled: boolean;
@@ -51,7 +51,7 @@ const inventorySlice = createSlice({
     disableProduct: (state, action: PayloadAction<string>) => {
       const product = state.products.find((p) => p.name === action.payload);
       if (product) {
-        product.disabled = !product.disabled; // Toggle the disabled state
+        product.disabled = !product.disabled;
       }
     },
   },

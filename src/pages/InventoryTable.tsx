@@ -52,7 +52,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
               <td className="p-3">{product.quantity}</td>
               <td className="p-3">{product.value.toLocaleString()}</td>
               <td className="p-3 text-center">
-                {/* Edit Button */}
                 <button
                   className={`mr-2 ${
                     isAdmin
@@ -65,7 +64,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                   <FaEdit size={18} />
                 </button>
 
-                {/* Disable/Enable Button */}
                 <button
                   className={`mr-2 ${
                     isAdmin
@@ -84,7 +82,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                   )}
                 </button>
 
-                {/* Delete Button */}
                 <button
                   className={`${
                     isAdmin
