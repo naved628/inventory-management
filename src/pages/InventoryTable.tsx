@@ -48,9 +48,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
             >
               <td className="p-3">{product.name}</td>
               <td className="p-3">{product.category}</td>
-              <td className="p-3">${product.price}</td>
+              <td className="p-3">{product.price}</td>
               <td className="p-3">{product.quantity}</td>
-              <td className="p-3">${product.value.toLocaleString()}</td>
+              <td className="p-3">{product.value.toLocaleString()}</td>
               <td className="p-3 text-center flex justify-center gap-2">
                 <button
                   className={`p-2 rounded-md ${
